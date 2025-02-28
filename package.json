@@ -1,0 +1,31 @@
+{
+  "name": "adaa",
+  "version": "1.0.0",
+  "description": "this is for dev",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "backOffice:up": "docker compose -f backoffice-compose.yml up",
+    "backOffice:composer:update": "docker compose -f backoffice-compose.yml run --rm composer update",
+    "backOffice:php:migrate": "docker compose -f backoffice-compose.yml exec app php artisan migrate",
+    "backOffice:down": "docker compose -f backoffice-compose.yml down",
+    "backOffice:logs": "docker compose -f backoffice-compose.yml logs -f",
+    "general:up": "docker compose -f general-compose.yml up",
+    "general:composer:update": "docker compose -f general-compose.yml run --rm composer update",
+    "general:php:migrate": "docker compose -f general-compose.yml exec general_app php artisan migrate",
+    "general:down": "docker compose -f general-compose.yml down",
+    "general:logs": "docker compose -f general-compose.yml logs -f",
+    "watch:up": "docker compose -f watch-compose.yml up",
+    "watch:composer:update": "docker compose -f watch-compose.yml run --rm composer update",
+    "watch:php:migrate": "docker compose -f watch-compose.yml exec watch_app php artisan migrate",
+    "watch:down": "docker compose -f watch-compose.yml down",
+    "watch:logs": "docker compose -f watch-compose.yml logs -f",
+    "auth:up": "docker compose -f auth-compose.yml up",
+    "auth:composer:update": "docker compose -f auth-compose.yml run --rm composer update",
+    "auth:php:migrate": "docker compose -f auth-compose.yml exec auth_app php artisan migrate",
+    "auth:down": "docker compose -f auth-compose.yml down",
+    "auth:logs": "docker compose -f auth-compose.yml logs -f"
+  },
+  "author": "bisynerd",
+  "license": "ISC"
+}

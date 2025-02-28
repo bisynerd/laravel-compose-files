@@ -1,0 +1,44 @@
+services:
+  watch_composer:
+    image: composer:2.6
+    container_name: watch_laravel_composer
+    working_dir: /var/www
+    volumes:
+      - ./adaalearning-watch-api:/var/www
+    # command: ["composer", "create-project", "--prefer-dist", "laravel/laravel", "."]
+    # command: sh -c "docker-php-ext-install sockets && composer update"
+    command: composer update --ignore-platform-req=ext-sockets
+
+  watch_app:
+    image: php:8.2-fpm
+    container_name: watch_laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./adaalearning-watch-api:/var/www
+    networks:
+      - watch_laravel_network
+      - adaa_shared_network
+    # entrypoint: ["/bin/sh", "-c", "docker-php-ext-install pdo pdo_mysql && php-fpm"]
+    # entrypoint: ["/bin/sh", "-c", "docker-php-ext-install pdo pdo_mysql sockets && php-fpm"]
+    entrypoint: ["/bin/sh", "-c", "apt-get update && apt-get install -y libzip-dev && docker-php-ext-install pdo pdo_mysql sockets zip && php-fpm"]
+
+  watch_webserver:
+    image: nginx:alpine
+    container_name: watch_laravel_webserver
+    restart: unless-stopped
+    ports:
+      - "8003:80"
+    volumes:
+      - ./adaalearning-watch-api:/var/www
+      - ./adaalearning-watch-api/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - watch_laravel_network
+    depends_on:
+      - watch_app
+
+networks:
+  watch_laravel_network:
+    driver: bridge
+  adaa_shared_network:
+    external: true

@@ -1,0 +1,44 @@
+services:
+  general_composer:
+    image: composer:2.6
+    container_name: general_laravel_composer
+    working_dir: /var/www
+    volumes:
+      - ./adaa-general-api:/var/www
+    # command: ["composer", "create-project", "--prefer-dist", "laravel/laravel", "."]
+    # command: sh -c "docker-php-ext-install sockets && composer update"
+    command: composer update --ignore-platform-req=ext-sockets
+
+  general_app:
+    image: php:8.2-fpm
+    container_name: general_laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./adaa-general-api:/var/www
+    networks:
+      - general_laravel_network
+      - adaa_shared_network
+    # entrypoint: ["/bin/sh", "-c", "docker-php-ext-install pdo pdo_mysql && php-fpm"]
+    # entrypoint: ["/bin/sh", "-c", "docker-php-ext-install pdo pdo_mysql sockets && php-fpm"]
+    entrypoint: ["/bin/sh", "-c", "apt-get update && apt-get install -y libzip-dev && docker-php-ext-install pdo pdo_mysql sockets zip && php-fpm"]
+
+  general_webserver:
+    image: nginx:alpine
+    container_name: general_laravel_webserver
+    restart: unless-stopped
+    ports:
+      - "8002:80"
+    volumes:
+      - ./adaa-general-api:/var/www
+      - ./adaa-general-api/docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - general_laravel_network
+    depends_on:
+      - general_app
+
+networks:
+  general_laravel_network:
+    driver: bridge
+  adaa_shared_network:
+    external: true
